@@ -20,7 +20,7 @@ class TCPServerThread(threading.Thread):
             print('tcp server(client) :: bytes image : ',byte_image)
             
             for i in pr:
-                if(1==""):
+                if(i==""):
                     
                     print("전송 완료. 바이트 이미지 복원하시겠습니까?(y/n)")
                     ans=input(':')
@@ -31,17 +31,17 @@ class TCPServerThread(threading.Thread):
                     print('tcp server(client) :: exit!!')
                     print('tcp server :: server wait')
                     break
-            data =self.connection.recv(1024)
-            #int.from_bytes(data, byteorder='big')
-            print('tcp server(client) -', i, end=" ")
-            print(':', data.decode())
-            
-            try:
-                int_data=int(data.decode())
-                print('int형:', int_data)
-            except:
-                print('int형 변환 불가')
-                pass
+                data =self.connection.recv(1024)
+                #int.from_bytes(data, byteorder='big')
+                print('tcp server(client) -', i, end=" ")
+                print(':', data.decode())
+                
+                try:
+                    int_data=int(data.decode())
+                    print('int형:', int_data)
+                except:
+                    print('int형 변환 불가')
+                    pass
             
         except:
             self.connections.remove(self.connection)
