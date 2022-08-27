@@ -1,18 +1,16 @@
-import socket
+import socket, threading
 import sys
-from this import d
 from PIL import Image
-import os
-import io
 from array import array
-import base64
+from random import uniform
+import struct
+import time
 
-host='192.168.0.2'
-port=50000
+host='172.22.62.155'
+port=50001
 addr=(host,port)
 
-pr=['1.height','2.width']
-
+    
 def run():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         
@@ -23,16 +21,28 @@ def run():
             sys.exit()
         print('서버 (%s:%s)에 연결 되었습니다.'%addr)
         
-        fd=open('test.bmp',"rb")
-        b=bytearray(fd.read())
-        s.sendall(b)
-        print('바이트 이미지 전송 완료')
-        fd.close()
         
-        for i in pr:
-            msg=input(i+ ' : ')
-            s.sendall(msg.encode())
-            print('서버로 보냄')
-        s.close()
+        while True: 
+            posx=uniform(-0.001,0.001)
+            posy=uniform(-0.001,0.001)
+            posz=uniform(-0.001,0.001)
+            rotx=uniform(-0.001,0.001)
+            roty=uniform(-0.001,0.001)
+            rotz=uniform(-0.001,0.001)
+            bax=bytearray(struct.pack("f",posx))
+            bay=bytearray(struct.pack("f",posy))
+            baz=bytearray(struct.pack("f",posz))
+            bax2=bytearray(struct.pack("f",rotx))
+            bay2=bytearray(struct.pack("f",roty))
+            baz2=bytearray(struct.pack("f",rotz))
+            s.sendall(bax)
+            s.sendall(bay)
+            s.sendall(baz)
+            s.sendall(bax2)
+            s.sendall(bay2)
+            s.sendall(baz2)
+            time.sleep(0.1)
+        
+        
 if __name__=='__main__':
     run()

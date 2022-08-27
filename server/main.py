@@ -1,4 +1,5 @@
 import tcpServer
 import executer
-andRaspTCP=tcpServer.TCPServer("192.168.0.2",50000)
+
+andRaspTCP=tcpServer.TCPServer("172.21.3.99",50000)
 andRaspTCP.start()

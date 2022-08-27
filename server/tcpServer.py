@@ -29,10 +29,4 @@ class TCPServer(threading.Thread):
                 self.tcpServerThread.append(subThread)
         except:
             print("tcp server :: serverThread error")
-            
-    def sendAll(self, message):
-        try:
-            self.tcpServerThreads[0].send(message)
-        except:
-            pass
-        
+    
