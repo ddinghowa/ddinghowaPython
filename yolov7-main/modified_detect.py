@@ -7,6 +7,7 @@ import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
 
+from client import tcp_send
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
@@ -35,11 +36,12 @@ def detect(save_img=False):
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(imgsz, s=stride)  # check img_size
 
-    if trace:
-        model = TracedModel(model, device, opt.img_size)
+    # Annotation to save time
+    # if trace:
+    #     model = TracedModel(model, device, opt.img_size)
 
-    if half:
-        model.half()  # to FP16
+    # if half:
+    #     model.half()  # to FP16
 
     # Second-stage classifier
     classify = False
@@ -130,11 +132,13 @@ def detect(save_img=False):
                 # Get class which have highest confidence
                 highest_cls = None
                 highest_conf = 0.0
+                
+                print(names)
 
                 for *xyxy, conf, cls in reversed(det):
                     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                     line = (cls, *xywh, conf) # label format
-                    prc_cls, prc_conf = names[int(cls)], float(conf)
+                    prc_cls, prc_conf = int(cls), float(conf)
                     # print(prc_cls, prc_conf) # test code
 
                     if prc_conf > highest_conf:
@@ -142,8 +146,11 @@ def detect(save_img=False):
                         highest_cls = prc_cls
                 
                 # print(highest_cls, highest_conf) # test code
-                tcp_info = f'{highest_cls} {conf:.2f}'
+                tcp_info = highest_cls + 1
 
+                # Send info to unity with tcp communication
+                tcp_send(tcp_info) 
+                
             # Print time (inference + NMS)
             print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
 
