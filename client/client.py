@@ -6,7 +6,7 @@ from random import uniform
 import struct
 import time
 
-host='172.22.62.155'
+host='172.30.1.41'
 port=50001
 addr=(host,port)
 
