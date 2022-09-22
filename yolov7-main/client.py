@@ -3,7 +3,7 @@ import sys
 import struct
 import time
 
-host = '172.30.1.41'
+host = '192.168.0.34'
 port = 50001
 addr = (host, port)
 
