@@ -148,11 +148,11 @@ def detect(save_img=False):
                             highest_conf = prc_conf
                             highest_cls = prc_cls
                     
-                    # print(highest_cls, highest_conf) # test code
+                    print(names[highest_cls], highest_conf) # test code
                     tcp_info = highest_cls + 1
 
                     # Send info to unity with tcp communication
-                    # tcp_send(tcp_info) 
+                    tcp_send(tcp_info) 
                     
                 # Print time (inference + NMS)
                 print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
