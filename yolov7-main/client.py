@@ -3,7 +3,7 @@ import sys
 import struct
 import time
 
-host = '192.168.0.34'
+host = '192.168.0.5'
 port = 50001
 addr = (host, port)
 
@@ -23,16 +23,13 @@ def tcp_send(info):
 
         # test code
 
-        while True:
-            info_bytearray = bytearray(struct.pack("i", info))
+        info_bytearray = bytearray(struct.pack("i", info))
 
-            s.sendall(info_bytearray)
+        s.sendall(info_bytearray)
 
-            time.sleep(1)
+        # time.sleep(1)
 
-            print(info)
-
-            info = (info % 3) + 1
+        print(info)
             
         
 if __name__=='__main__':
