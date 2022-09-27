@@ -49,7 +49,7 @@ class ServerSocket:
                 image=Image.open(data_io)
                 deg_image=image.transpose(Image.ROTATE_90)
                 flip_image=deg_image.transpose(Image.FLIP_LEFT_RIGHT)
-                flip_image.save('image/test.jpg') 
+                flip_image.save('yolov7-main/image/test.jpg') 
                 
             except Exception as e:
                 print(e)
