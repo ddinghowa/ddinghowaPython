@@ -17,17 +17,10 @@ def tcp_send(info):
             print('서버 (%s:%s)에 연결 할 수 없습니다.'%addr)
             sys.exit()
         print('서버 (%s:%s)에 연결 되었습니다.'%addr)        
-        
-        # info_bytearray = bytearray(struct.pack("i", info + i))
-        # s.sendall(info_bytearray)
-
-        # test code
 
         info_bytearray = bytearray(struct.pack("i", info))
 
         s.sendall(info_bytearray)
-
-        # time.sleep(1)
 
         print(info)
             
