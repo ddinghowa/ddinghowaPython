@@ -7,7 +7,6 @@ import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
 
-from client import tcp_send
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
@@ -15,8 +14,16 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
+import socket
+import sys
+import struct
 
-def detect(save_img=False):
+host = '192.168.0.74'
+port = 50001
+addr = (host, port)
+
+
+def detect(_s, save_img=False):
     source, weights, view_img, save_txt, imgsz, trace = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size, not opt.no_trace
     save_img = not opt.nosave and not source.endswith('.txt')  # save inference images
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -152,7 +159,8 @@ def detect(save_img=False):
                     tcp_info = highest_cls + 1
 
                     # Send info to unity with tcp communication
-                    tcp_send(tcp_info) 
+                    info_bytearray = bytearray(struct.pack("i", tcp_info))
+                    _s.sendall(info_bytearray)
                     
                 # Print time (inference + NMS)
                 print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
@@ -211,12 +219,21 @@ if __name__ == '__main__':
     parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
     opt = parser.parse_args()
     print(opt)
-    #check_requirements(exclude=('pycocotools', 'thop'))
+    # check_requirements(exclude=('pycocotools', 'thop'))
 
-    with torch.no_grad():
-        if opt.update:  # update all models (to fix SourceChangeWarning)
-            for opt.weights in ['yolov7.pt']:
-                detect()
-                strip_optimizer(opt.weights)
-        else:
-            detect()
+    # client 통신
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.connect(addr)
+        except Exception as e:
+            print('서버 (%s:%s)에 연결 할 수 없습니다.'%addr)
+            sys.exit()
+        print('서버 (%s:%s)에 연결 되었습니다.'%addr)   
+
+        with torch.no_grad():
+            if opt.update:  # update all models (to fix SourceChangeWarning)
+                for opt.weights in ['yolov7.pt']:
+                    detect(s)
+                    strip_optimizer(opt.weights)
+            else:
+                detect(s)
